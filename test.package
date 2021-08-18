@@ -1,6 +1,0 @@
----
-name: hello!
-version_id: "1.0"
-command: ls
-path: "./test.package"
-print_command_output: true
