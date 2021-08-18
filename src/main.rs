@@ -1,10 +1,11 @@
 mod package;
+mod logging;
 
 use std::{env, time::SystemTime};
 
 use git2::Repository;
 use package::Package;
-use yansi::Paint;
+use logging::*;
 
 #[tokio::main]
 async fn main() {
@@ -19,28 +20,28 @@ async fn main() {
             let folder = format!("./{}/", package_name);
             let start_time = SystemTime::now();
             
-            log(&format!("Cloning from repository {}", repository_name), LogType::Waiting);
+            print(&format!("Cloning from repository {}", repository_name), PrintType::Waiting);
 
             if let Ok(_repository) = Repository::clone(repository_name.as_str(), folder.to_string()) {
-                log(&format!("Cloned from repository"), LogType::Success);
-                log(&format!("Loading package from directory {}", folder), LogType::Waiting);
+                print(&format!("Cloned from repository"), PrintType::Success);
+                print(&format!("Loading package from directory {}", folder), PrintType::Waiting);
 
                 let package = &mut Package::load_package(folder.to_string());
 
                 env::set_current_dir(folder).unwrap();
         
                 if let Some(package) = package {
-                    log("Loaded package from directory", LogType::Success);
-                    log("Trying to execute install script", LogType::Waiting);
+                    print("Loaded package from directory", PrintType::Success);
+                    print("Trying to execute install script", PrintType::Waiting);
 
                     package.execute_command();
 
-                    log(&format!("Successfully installed {} in {}ms", package_name, &start_time.elapsed().unwrap().as_millis()), LogType::Success);
+                    print(&format!("Successfully installed {} in {}ms", package_name, &start_time.elapsed().unwrap().as_millis()), PrintType::Success);
                 } else {
-                    log(&"Failed to load package from directory...", LogType::Error);
+                    print("Failed to load package from directory...", PrintType::Error);
                 }
             } else {
-                log(&format!("Failed to clone from repository {}", repository_name), LogType::Error);
+                print(&format!("Failed to clone from repository {}", repository_name), PrintType::Error);
             }
         },
 
@@ -48,11 +49,11 @@ async fn main() {
             let package_name = &args[2];
             let package = &mut Package::new(&package_name, &format!("{}.package", package_name));
 
-            log(&format!("Creating package with name {}", package_name), LogType::Waiting);
+            print(&format!("Creating package with name {}", package_name), PrintType::Waiting);
 
             package.store_package();
 
-            log("Successfully created package", LogType::Success);
+            print("Successfully created package", PrintType::Success);
         },
 
         _ => {
@@ -62,21 +63,4 @@ async fn main() {
             println!("   pacrus (-i, --install)");
         }
     };
-}
-
-fn log(message: &str, log_type: LogType) {
-    match log_type {
-        LogType::Success => print!("{} ", Paint::green("✅")),
-        LogType::Error => print!("{} ", Paint::red("✗")),
-        LogType::Waiting => print!("{} ", Paint::yellow("..")),
-        LogType::None => (),
-    }
-
-    println!("{}", message);
-}
-enum LogType {
-    Success,
-    Error,
-    Waiting,
-    None
 }
