@@ -85,7 +85,7 @@ impl Package {
                 println!("{:?}", String::from_utf8(result.stdout).unwrap());
                 println!("{:?}", String::from_utf8(result.stderr).unwrap());
             } else {
-                println!("Unable to execute command.");
+                println!("{:?}", command_result);
             }
         }
     }

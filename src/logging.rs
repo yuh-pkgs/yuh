@@ -14,5 +14,5 @@ pub enum PrintType {
     Success,
     Error,
     Waiting,
-    None
+    None,
 }
