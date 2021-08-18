@@ -77,10 +77,10 @@ impl Package {
                 arguments.push(ele.to_string());
             }
         }
-        
+
         let command_result = Command::new(command).args(arguments).output();
 
-        if !self.print_command_output {
+        if self.print_command_output {
             if let Ok(result) = command_result {
                 println!("{:?}", String::from_utf8(result.stdout).unwrap());
                 println!("{:?}", String::from_utf8(result.stderr).unwrap());
