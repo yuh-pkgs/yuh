@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{fmt::format, fs, fs::File, io::Write, process::Command};
+use std::{fs, fs::File, io::Write, process::Command};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Package {
