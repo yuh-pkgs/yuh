@@ -1,15 +1,22 @@
 use yansi::Paint;
 
 pub fn print(message: &str, print_type: PrintType) {
-    match print_type {
-        PrintType::Success => print!("{} ", Paint::green("✅")),
-        PrintType::Error => print!("{} ", Paint::red("✗")),
-        PrintType::Waiting => print!("{} ", Paint::yellow("..")),
-        PrintType::None => (),
-    }
+    let symbol = match print_type {
+        PrintType::Success => Paint::green(":white_check_mark:").to_string(),
+        PrintType::Error => Paint::red("✗").to_string(),
+        PrintType::Waiting => Paint::yellow("..").to_string(),
+        PrintType::None => "".to_string(),
+    };
 
-    println!("{}", message);
+    
+    if print_type == PrintType::Error {
+        eprintln!("{} {}", symbol, message);
+    } else {
+        println!("{} {}", symbol, message);
+    }
 }
+
+#[derive(PartialEq)]
 pub enum PrintType {
     Success,
     Error,
