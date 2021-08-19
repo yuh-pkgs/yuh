@@ -2,7 +2,7 @@ use yansi::Paint;
 
 pub fn print(message: &str, print_type: PrintType) {
     let symbol = match print_type {
-        PrintType::Success => Paint::green(":white_check_mark:").to_string(),
+        PrintType::Success => Paint::green("✅").to_string(),
         PrintType::Error => Paint::red("✗").to_string(),
         PrintType::Waiting => Paint::yellow("..").to_string(),
         PrintType::None => "".to_string(),
