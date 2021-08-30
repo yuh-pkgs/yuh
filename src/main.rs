@@ -1,9 +1,8 @@
 mod logging;
 mod package;
 
-use std::{env, time::SystemTime};
+use std::env;
 
-use git2::Repository;
 use logging::*;
 use package::Package;
 
@@ -13,59 +12,48 @@ async fn main() {
     let option = &args[1];
 
     match option.as_str() {
-        "-i" | "--install" => {
+        "i" | "install" => {
+            let packages: &mut Vec<Package> = &mut Vec::new();
+
+            print("Fetching package data...", PrintType::Waiting);
+
             for i in 0..args.len() - 2 {
-                let package_name = &args[i + 2];
-                let repository_name = format!("https://github.com/{}/{}", "Pacrus", package_name);
+                if let Some(package) = Package::fetch_package(&args[i]) {
+                    packages.push(package);
+                }
+            }
 
-                let folder = format!("./{}/", package_name);
-                let start_time = SystemTime::now();
+            let mut package_str = "".to_owned();
 
+            for i in 0..packages.len() {
+                let package = &packages[i];
+
+                package_str.push_str(&format!("{} {}", package.name, package.version_id));
+
+                if i != packages.len() - 1 {
+                    package_str.push(',');
+                }
+            }
+
+            print(
+                &format!(" Found {} packages: {}", packages.len(), &package_str),
+                PrintType::None,
+            );
+
+            for package in packages {
                 print(
-                    &format!("Cloning from repository {}", repository_name),
-                    PrintType::Waiting,
+                    &format!(
+                        "Executing {} {} build script.",
+                        package.name, package.version_id
+                    ),
+                    PrintType::None,
                 );
 
-                if let Ok(_repository) =
-                    Repository::clone(repository_name.as_str(), folder.to_string())
-                {
-                    print(&format!("Cloned from repository"), PrintType::Success);
-                    print(
-                        &format!("Loading package from directory {}", folder),
-                        PrintType::Waiting,
-                    );
-
-                    let package = &mut Package::load_package(folder.to_string());
-
-                    env::set_current_dir(folder).unwrap();
-
-                    if let Some(package) = package {
-                        print("Loaded package from directory", PrintType::Success);
-                        print("Trying to execute install script", PrintType::Waiting);
-
-                        package.execute_command();
-
-                        print(
-                            &format!(
-                                "Successfully installed {} in {}ms",
-                                package_name,
-                                &start_time.elapsed().unwrap().as_millis()
-                            ),
-                            PrintType::Success,
-                        );
-                    } else {
-                        print("Failed to load package from directory...", PrintType::Error);
-                    }
-                } else {
-                    print(
-                        &format!("Failed to clone from repository {}", repository_name),
-                        PrintType::Error,
-                    );
-                }
+                package.execute_command();
             }
         }
 
-        "-c" | "--create" => {
+        "c" | "create" => {
             let package_name = &args[2];
             let package = &mut Package::new(&package_name, &format!("{}.package", package_name));
 
@@ -80,11 +68,11 @@ async fn main() {
         }
 
         _ => {
-            print("usage: pacrus <operation> [...]", PrintType::Error);
+            print("usage: yuh <operation> [...]", PrintType::Error);
 
             print("operations:", PrintType::None);
-            print("   pacrus (-i, --install) [packages...]", PrintType::None);
-            print("   pacrus (-c, --create) [name]", PrintType::None);
+            print("   yuh (-i, --install) [packages...]", PrintType::None);
+            print("   yuh (-c, --create) [name]", PrintType::None);
         }
     };
 }

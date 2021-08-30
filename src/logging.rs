@@ -8,7 +8,6 @@ pub fn print(message: &str, print_type: PrintType) {
         PrintType::None => "".to_string(),
     };
 
-    
     if print_type == PrintType::Error {
         eprintln!("{} {}", symbol, message);
     } else {

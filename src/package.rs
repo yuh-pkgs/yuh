@@ -1,12 +1,14 @@
+use git2::Repository;
 use serde::{Deserialize, Serialize};
-use std::{fs, fs::File, io::Write, process::Command};
+use std::{env, fs, fs::File, io::Write, process::Command};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Package {
-    name: String,
-    version_id: String,
+    pub name: String,
+    pub version_id: String,
+
     command: String,
-    path: String,
+    pub path: String,
 
     print_command_output: bool,
 }
@@ -22,6 +24,17 @@ impl Package {
 
             print_command_output: true,
         }
+    }
+
+    pub fn fetch_package(package_name: &str) -> Option<Self> {
+        let repository_name = format!("https://github.com/{}/{}", "yuh", package_name);
+        let folder = format!("./{}/", package_name);
+
+        if let Ok(_repository) = Repository::clone(repository_name.as_str(), folder.to_string()) {
+            return Self::load_package(folder);
+        }
+
+        return None;
     }
 
     pub fn load_package(path: String) -> Option<Self> {
@@ -77,6 +90,8 @@ impl Package {
                 arguments.push(ele.to_string());
             }
         }
+
+        env::set_current_dir(&self.path).expect("Unable to move directory.");
 
         let command_result = Command::new(command).args(arguments).output();
 

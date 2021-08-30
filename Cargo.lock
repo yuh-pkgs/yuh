@@ -253,17 +253,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pacrus"
-version = "0.2.1"
-dependencies = [
- "git2",
- "serde",
- "serde_yaml",
- "tokio",
- "yansi",
-]
-
-[[package]]
 name = "parking_lot"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -518,3 +507,14 @@ name = "yansi"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9fc79f4a1e39857fc00c3f662cbf2651c771f00e9c15fe2abc341806bd46bd71"
+
+[[package]]
+name = "yuh"
+version = "0.2.1"
+dependencies = [
+ "git2",
+ "serde",
+ "serde_yaml",
+ "tokio",
+ "yansi",
+]
