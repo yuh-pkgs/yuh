@@ -9,6 +9,12 @@ use package::Package;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
+
+    if args.len() <= 1 {
+        print_fallback_message();
+        return;
+    }
+
     let option = &args[1];
 
     match option.as_str() {
@@ -20,7 +26,7 @@ async fn main() {
             for i in 0..args.len() - 2 {
                 if let Some(package) = Package::fetch_package(&args[i]) {
                     packages.push(package);
-                }
+                }                
             }
 
             let mut package_str = "".to_owned();
@@ -68,11 +74,15 @@ async fn main() {
         }
 
         _ => {
-            print("usage: yuh <operation> [...]", PrintType::Error);
-
-            print("operations:", PrintType::None);
-            print("   yuh (-i, --install) [packages...]", PrintType::None);
-            print("   yuh (-c, --create) [name]", PrintType::None);
+            print_fallback_message();
         }
     };
+}
+
+fn print_fallback_message() {
+    print("usage: yuh <operation> [...]", PrintType::Error);
+
+    print("operations:", PrintType::None);
+    print("   yuh (i, install) [packages...]", PrintType::None);
+    print("   yuh (c, create) [name]", PrintType::None);
 }

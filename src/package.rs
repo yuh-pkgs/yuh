@@ -27,14 +27,13 @@ impl Package {
     }
 
     pub fn fetch_package(package_name: &str) -> Option<Self> {
-        let repository_name = format!("https://github.com/{}/{}", "yuh", package_name);
+        let repository_name = format!("https://github.com/{}/{}", "yuh-pkgs", package_name);
         let folder = format!("./{}/", package_name);
 
-        if let Ok(_repository) = Repository::clone(repository_name.as_str(), folder.to_string()) {
-            return Self::load_package(folder);
+        return match Repository::clone(repository_name.as_str(), folder.to_string()) {
+            Ok(_repository) => Self::load_package(folder),
+            Err(_error) => None,
         }
-
-        return None;
     }
 
     pub fn load_package(path: String) -> Option<Self> {
