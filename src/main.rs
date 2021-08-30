@@ -36,14 +36,14 @@ async fn main() {
             }
 
             print(
-                &format!(" Found {} packages: {}", packages.len(), &package_str),
+                &format!("\n Found {} packages: {} \n", packages.len(), &package_str),
                 PrintType::None,
             );
 
             for package in packages {
                 print(
                     &format!(
-                        "Executing {} {} build script.",
+                        "Executing {} {} build script...",
                         package.name, package.version_id
                     ),
                     PrintType::None,
