@@ -26,7 +26,7 @@ async fn main() {
             for i in 0..args.len() - 2 {
                 if let Some(package) = Package::fetch_package(&args[i]) {
                     packages.push(package);
-                }                
+                }
             }
 
             let mut package_str = "".to_owned();
@@ -56,6 +56,7 @@ async fn main() {
                 );
 
                 package.execute_command();
+                package.clean_work_directory();
             }
         }
 

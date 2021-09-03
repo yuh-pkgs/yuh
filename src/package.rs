@@ -33,7 +33,7 @@ impl Package {
         return match Repository::clone(repository_name.as_str(), folder.to_string()) {
             Ok(_repository) => Self::load_package(folder),
             Err(_error) => None,
-        }
+        };
     }
 
     pub fn load_package(path: String) -> Option<Self> {
@@ -101,6 +101,13 @@ impl Package {
             } else {
                 println!("{:?}", command_result);
             }
+        }
+    }
+
+    pub fn clean_work_directory(&mut self) {
+        match env::current_dir() {
+            Ok(buf) => fs::remove_dir(buf).expect("Unable to remove directory"),
+            Err(error) => println!("{:#?}", error),
         }
     }
 }
