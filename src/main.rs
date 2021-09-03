@@ -9,6 +9,7 @@ use package::Package;
 
 #[tokio::main]
 async fn main() {
+    let build_folder = env::current_dir();
     let args: Vec<String> = env::args().collect();
 
     if args.len() <= 1 {
@@ -76,7 +77,16 @@ async fn main() {
                     PrintType::None,
                 );
 
+                // clean the build directory of the package
                 package.clean_work_directory();
+
+                // move back to the build directory
+                match &build_folder {
+                    Ok(directory) => env::set_current_dir(directory).expect("Unable to move to directory."),
+                    Err(_error) => println!("{:#?}", _error)
+                };
+                
+                // register the package to the installed_packages vec
                 installed_packages.push(package.clone());
             }
 
