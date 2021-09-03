@@ -28,10 +28,19 @@ impl Package {
 
     pub fn fetch_package(package_name: &str) -> Option<Self> {
         let repository_name = format!("https://github.com/{}/{}", "yuh-pkgs", package_name);
-        let folder = format!("./{}/", package_name);
+        let folder = &format!("./{}/", package_name);
 
         return match Repository::clone(repository_name.as_str(), folder.to_string()) {
-            Ok(_repository) => Self::load_package(folder),
+            Ok(_repository) => {
+                let package = &mut Self::load_package(folder.to_string());
+
+                match package {
+                    Some(package) => package.path = folder.clone(),
+                    None => (),
+                };
+
+                return package.clone();
+            }
             Err(_error) => None,
         };
     }
@@ -106,8 +115,12 @@ impl Package {
 
     pub fn clean_work_directory(&mut self) {
         match env::current_dir() {
-            Ok(buf) => fs::remove_dir(buf).expect("Unable to remove directory"),
+            Ok(buf) => fs::remove_dir_all(buf).expect("Unable to remove directory"),
             Err(error) => println!("{:#?}", error),
         }
+    }
+
+    pub fn get_display_name(self) -> String {
+        format!("{} v{}", self.name, self.version_id)
     }
 }

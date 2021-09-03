@@ -20,12 +20,14 @@ async fn main() {
     match option.as_str() {
         "i" | "install" => {
             let packages: &mut Vec<Package> = &mut Vec::new();
+            let installed_packages: &mut Vec<Package> = &mut Vec::new();
 
             print("Fetching package data...", PrintType::Waiting);
 
             for i in 0..args.len() - 2 {
-                if let Some(package) = Package::fetch_package(&args[i]) {
-                    packages.push(package);
+                match Package::fetch_package(&args[i + 2]) {
+                    Some(package) => packages.push(package),
+                    None => (),
                 }
             }
 
@@ -33,8 +35,9 @@ async fn main() {
 
             for i in 0..packages.len() {
                 let package = &packages[i];
+                let package_name = package.clone().get_display_name();
 
-                package_str.push_str(&format!("{} {}", package.name, package.version_id));
+                package_str.push_str(&format!("{}", package_name));
 
                 if i != packages.len() - 1 {
                     package_str.push(',');
@@ -42,22 +45,36 @@ async fn main() {
             }
 
             print(
-                &format!("\n Found {} packages: {} \n", packages.len(), &package_str),
+                &format!("\nFound {} package(s): {} \n", packages.len(), &package_str),
                 PrintType::None,
             );
 
             for package in packages {
+                let package_name = package.clone().get_display_name();
+
                 print(
-                    &format!(
-                        "Executing {} {} build script...",
-                        package.name, package.version_id
-                    ),
+                    &format!("[{}] - Executing build script...", package_name),
                     PrintType::None,
                 );
 
                 package.execute_command();
+
+                print(
+                    &format!("[{}] - Cleaning installation directory...", package_name),
+                    PrintType::None,
+                );
+
                 package.clean_work_directory();
+                installed_packages.push(package.clone());
             }
+
+            print(
+                &format!(
+                    "\nSuccessfully installed {} package(s)!",
+                    installed_packages.len()
+                ),
+                PrintType::None,
+            );
         }
 
         "c" | "create" => {

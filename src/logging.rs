@@ -2,16 +2,16 @@ use yansi::Paint;
 
 pub fn print(message: &str, print_type: PrintType) {
     let symbol = match print_type {
-        PrintType::Success => Paint::green("✅").to_string(),
-        PrintType::Error => Paint::red("✗").to_string(),
-        PrintType::Waiting => Paint::yellow("..").to_string(),
+        PrintType::Success => Paint::green("✅ ").to_string(),
+        PrintType::Error => Paint::red("✗ ").to_string(),
+        PrintType::Waiting => Paint::yellow(".. ").to_string(),
         PrintType::None => "".to_string(),
     };
 
     if print_type == PrintType::Error {
-        eprintln!("{} {}", symbol, message);
+        eprintln!("{}{}", symbol, message);
     } else {
-        println!("{} {}", symbol, message);
+        println!("{}{}", symbol, message);
     }
 }
 
