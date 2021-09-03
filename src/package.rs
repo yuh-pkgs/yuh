@@ -7,9 +7,9 @@ pub struct Package {
     pub name: String,
     pub version_id: String,
 
-    command: String,
     pub path: String,
 
+    command: String,
     print_command_output: bool,
 }
 

@@ -12,3 +12,6 @@ serde_yaml = "*"
 
 git2 = "0.13.21"
 yansi = "0.5"
+
+byte-unit = "4.0.12"
+fs_extra = "1.2.0"

@@ -3,6 +3,7 @@ mod package;
 
 use std::env;
 
+use byte_unit::Byte;
 use logging::*;
 use package::Package;
 
@@ -32,6 +33,7 @@ async fn main() {
             }
 
             let mut package_str = "".to_owned();
+            let mut file_size = 0;
 
             for i in 0..packages.len() {
                 let package = &packages[i];
@@ -42,10 +44,20 @@ async fn main() {
                 if i != packages.len() - 1 {
                     package_str.push(',');
                 }
+
+                file_size += fs_extra::dir::get_size(format!("{}", package.path)).unwrap();
             }
 
             print(
-                &format!("\nFound {} package(s): {} \n", packages.len(), &package_str),
+                &format!("\nFound {} package(s): {}", packages.len(), &package_str),
+                PrintType::None,
+            );
+
+            print(
+                &format!(
+                    "Total Binary Size: {} \n",
+                    Byte::from_bytes(file_size as u128).get_appropriate_unit(true)
+                ),
                 PrintType::None,
             );
 
@@ -91,6 +103,13 @@ async fn main() {
             print("Successfully created package", PrintType::Success);
         }
 
+        "v" | "version" => {
+            println!(
+                "yuh-pkgs v{} - https://github.com/yuh-pkgs",
+                env!("CARGO_PKG_VERSION")
+            );
+        }
+
         _ => {
             print_fallback_message();
         }
@@ -103,4 +122,5 @@ fn print_fallback_message() {
     print("operations:", PrintType::None);
     print("   yuh (i, install) [packages...]", PrintType::None);
     print("   yuh (c, create) [name]", PrintType::None);
+    print("   yuh (v, version)", PrintType::None);
 }
